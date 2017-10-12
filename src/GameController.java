@@ -4,9 +4,11 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 public class GameController implements Runnable{
 
@@ -14,7 +16,6 @@ public class GameController implements Runnable{
 	Pane gameBoard;
 	ArrayList<Entity> entities;
 	Entity chr;
-	static final double ground = 270;
 	double tls = System.currentTimeMillis();
 
 	public GameController(Pane p, Scene scene) {
@@ -29,7 +30,7 @@ public class GameController implements Runnable{
 	}
 
 	public Entity createRock() {
-		Entity e = new Entity(new Circle(20), true);
+		Entity e = new Entity(new Circle(20), false);
 		e.setX(500.0);
 		e.setY(270.0);
 		e.setXSpeed(-2);
@@ -59,10 +60,18 @@ public class GameController implements Runnable{
 
 			@Override
 			public void handle(KeyEvent event) {
-//				if(chr.getY() == ground) {
-//					chr.setYSpeed(-4);
-//				}
-				chr.setNode(new Rectangle());
+				if(event.getCode() == KeyCode.SPACE) {
+					if(chr.getY() == Entity.ground) {
+						chr.setYSpeed(-4);
+					}
+					return;
+				} else if(event.getCode() == KeyCode.DOWN) {
+					gameBoard.getChildren().remove(chr.getNode());
+					gameBoard.getChildren().add(chr.setNode(new Rectangle(10,10)));
+				} else if(event.getCode() == KeyCode.UP) {
+					gameBoard.getChildren().remove(chr.getNode());
+					gameBoard.getChildren().add(chr.setNode(new Circle(20)));
+				}
 			}
 
 		});

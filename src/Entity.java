@@ -6,14 +6,17 @@ import javafx.scene.shape.Rectangle;
 
 public class Entity {
 
-	Node root;
-	double ySpeed;
-	double xSpeed;
-	double x;
-	double y;
-	boolean isCircle;
-	double radius;
-	boolean gravity;
+	private Node root;
+	private double ySpeed;
+	private double xSpeed;
+	private double x;
+	private double y;
+	private boolean isCircle;
+	private double radius;
+	private boolean gravity;
+	private double height;
+	private double width;
+	static double ground = 270;
 
 	public Entity(Node size, boolean gravity) {
 		this.gravity = gravity;
@@ -36,10 +39,10 @@ public class Entity {
 			@Override
 			public void run() {
 				if(gravity) {
-					if(y > GameController.ground) {
-						y = GameController.ground;
+					if(y > ground) {
+						y = ground;
 						ySpeed = 0;
-					} else if(y != GameController.ground){
+					} else if(y != ground){
 						ySpeed += .0925;
 					}
 				}
@@ -50,7 +53,11 @@ public class Entity {
 	}
 
 	public boolean checkCollision(double x2, double  y2) {
-		return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2)) < 40;
+		if(isCircle) {
+			return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2)) < radius;
+		} else {
+			return x2 < x + width / 2  && x2 > x - width / 2 && y2 < y + height / 2  && y2 > y - height / 2;
+		}
 	}
 
 	public void setXSpeed(double d) {
@@ -83,8 +90,25 @@ public class Entity {
 		return y;
 	}
 
-	public void setNode(Node root) {
-
+	public Node setNode(Node root) {
+		if(root instanceof Circle) {
+			root.relocate(x, y);
+			x = root.getLayoutX();
+			y = root.getLayoutY();
+			ground = 270;
+			isCircle = true;
+			radius = ((Circle) root).getRadius();
+			return this.root = root;
+		} else if(root instanceof Rectangle){
+			root.relocate(x, y + 20);
+			y += 20;
+			ground = 300;
+			isCircle = false;
+			width = ((Rectangle) root).getWidth();
+			height = ((Rectangle) root).getHeight();
+			return this.root = root;
+		}
+		return null;
 	}
 
 }
