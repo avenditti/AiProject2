@@ -7,21 +7,59 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class GameController implements Runnable{
 
-	Scene mainScene;
-	Pane gameBoard;
-	ArrayList<Entity> entities;
-	Entity chr;
+	Scene mS;
+	Pane gB;
+	ArrayList<Entity> es;
+	Bot chr;
 	double tls = System.currentTimeMillis();
+	Controller c;
+	double yjv;
+	double ydv;
 
-	public GameController(Pane p, Scene scene) {
-		mainScene = scene;
-		gameBoard = p;
-		entities = new ArrayList<Entity>();
+	public GameController(Pane p, Scene scene, Controller c) {
+		mS = scene;
+		gB = p;
+		es = new ArrayList<Entity>();
+		chr = new Bot(this);
+		aE(chr.root);
+		mS.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode() == KeyCode.SPACE) {
+					yjv = 1;
+					new Thread() {
+						@Override
+						public void run() {
+							while((yjv -= .1) > 0) {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					};
+					return;
+				} else if(event.getCode() == KeyCode.DOWN) {
+					chr.duck();
+
+				} else if(event.getCode() == KeyCode.UP) {
+				}
+			}
+
+		});
+		mS.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+			}
+
+		});
 	}
 
 	@Override
@@ -29,77 +67,31 @@ public class GameController implements Runnable{
 		startGameLoop();
 	}
 
-	public Entity createRock() {
-		Entity e = new Entity(new Circle(20), false);
-		e.setX(500.0);
-		e.setY(270.0);
+	public Entity createObstacle(boolean isRock) {
+		Entity e = new Entity(new Rectangle(20, 20));
+		e.setX(500);
+		e.setY(isRock ? 290.0 : 265.0);
+		e.bird = !isRock;
 		e.setXSpeed(-2);
 		e.setYSpeed(0);
-		addEntity(e.getNode());
-		entities.add(e);
-		return e;
-	}
-
-	public Entity createBird() {
-		Entity e = new Entity(new Circle(20), false);
-		e.setX(500.0);
-		e.setY(235.0);
-		e.setXSpeed(-2);
-		e.setYSpeed(0);
-		addEntity(e.getNode());
-		entities.add(e);
-		return e;
-	}
-
-	public Entity createCharacter() {
-		Entity e = new Entity(new Circle(20), true);
-		e.setX(100.0);
-		e.setY(270.0);
-		addEntity(e.getNode());
-		mainScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if(event.getCode() == KeyCode.SPACE) {
-					if(chr.getY() == Entity.ground) {
-						chr.setYSpeed(-4);
-					}
-					return;
-				} else if(event.getCode() == KeyCode.DOWN) {
-					gameBoard.getChildren().remove(chr.getNode());
-					gameBoard.getChildren().add(chr.setNode(new Rectangle(10,10)));
-				} else if(event.getCode() == KeyCode.UP) {
-					gameBoard.getChildren().remove(chr.getNode());
-					gameBoard.getChildren().add(chr.setNode(new Circle(20)));
-				}
-			}
-
-		});
-		mainScene.setOnKeyReleased(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-			}
-
-		});
+		aE(e.root);
+		es.add(e);
 		return e;
 	}
 
 	public void startGameLoop() {
-		chr = createCharacter();
-		createRock();
 		while(true) {
 			checkEntities();
 			if(System.currentTimeMillis() - tls > 1500) {
 				if(Math.random() < .5) {
-					createBird();
+					createObstacle(false);
 				}else if(Math.random() < .5) {
-					createRock();
+					createObstacle(true);
 				}
 			tls = System.currentTimeMillis();
 			}
 			chr.doPhysics();
-			for(Entity e : entities) {
+			for(Entity e : es) {
 				e.doPhysics();
 			}
 			try {
@@ -111,35 +103,41 @@ public class GameController implements Runnable{
 	}
 
 	private void checkEntities() {
-		for(int i = 0; i < entities.size(); i++ ) {
-			if(chr.checkCollision(entities.get(i).getX(), entities.get(i).getY())) {
+		for(int i = 0; i < es.size(); i++ ) {
+			if(es.get(i).x - chr.x < 100 && es.get(i).x - chr.x > 80) {
+				System.out.println(1 / (es.get(i).x / 250));
+			}
+			if(chr.checkCollision(es.get(i))) {
 				System.out.println("COLLISION");
-				removeEntity(entities.get(i).getNode());
-				entities.remove(i);
-			} else if(entities.get(i).getX() < -100) {
-				removeEntity(entities.get(i).getNode());
-				entities.remove(i);
+				rE(es.get(i).root);
+				es.remove(i);
+			} else if(es.get(i).x < -100) {
+				rE(es.get(i).root);
+				es.remove(i);
 			}
 		}
 	}
+	/*
+	 * Removes an entity and discards it
+	 */
 
-	public void removeEntity(Node e) {
+	public void rE(Node e) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
-				gameBoard.getChildren().remove(e);
+				gB.getChildren().remove(e);
 			}
 
 		});
 	}
 
-	public void addEntity(Node e) {
+	public void aE(Node e) {
 		Platform.runLater(new Runnable() {
 
 			@Override
 			public void run() {
-				gameBoard.getChildren().add(e);
+				gB.getChildren().add(e);
 			}
 
 		});
