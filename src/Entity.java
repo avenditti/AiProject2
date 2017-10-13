@@ -12,6 +12,7 @@ public class Entity {
 	double height;
 	double width;
 	boolean bird;
+	public boolean seen;
 
 	public Entity(Rectangle rec) {
 		root = rec;

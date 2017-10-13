@@ -2,9 +2,9 @@
 public class Controller {
 
 	private Neuron[][] n;
-	private double[][] w;
+	double[][] w;
 	private static final double phi = 0.01;
-	private static final double alpha = 0.1;
+	private static final double alpha = 0.5;
 	private static final double lambda = alpha / phi;
 
 	/*
@@ -39,7 +39,7 @@ public class Controller {
 		}
 		for(int i = 0; i < n[1].length; i++) {
 			n[1][i].value = 0;
-			for (int j = 0; j <= w[0].length; j++) {
+			for (int j = 0; j < w.length; j++) {
 				n[1][i].value += n[0][j].value * w[j][i] - n[1][i].theta;
 			}
 			n[1][i].value = step(n[1][i].value);

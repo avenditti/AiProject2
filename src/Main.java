@@ -14,13 +14,12 @@ public class Main extends Application {
 	public static final double boardSizeY = 500;
 
 	public static void main(String[] args) {
-		System.out.println(c);
 		Main.launch();
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Controller c = new Controller(1, 4, 0, 0, 10, 10);
+		Controller c = new Controller(2, 4, 0, 0, 0, 0, 10, 0, 0, 10);
 		Pane root = new Pane();
 		Scene scene = new Scene(root, boardSizeX, boardSizeY);
 		Rectangle g = new Rectangle(500, 200, Color.GOLDENROD);
@@ -33,8 +32,8 @@ public class Main extends Application {
 			public void handle(KeyEvent event) {
 			}
 		});
-
-		Thread t = new Thread(new GameController(root, scene, c));
+		GameController gc = new GameController(root, scene, c);
+		Thread t = new Thread(gc);
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
 			@SuppressWarnings("deprecation")
@@ -42,6 +41,7 @@ public class Main extends Application {
 			public void handle(WindowEvent event) {
 				t.stop();
 				stage.close();
+				gc.running = false;
 			}
 
 		});
