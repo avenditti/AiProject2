@@ -143,10 +143,8 @@ public class GameController implements Runnable{
 					} else {
 						cjv = 1;
 					}
-					System.out.println(cjv + " " + cdv + " " + yjv + " " + ydv);
-					System.out.println(c.w[0][0] + " " + c.w[0][1] + " " + c.w[1][0] + " " + c.w[1][1]);
+					System.out.println(c.w[0][0] + " " + c.w[0][1] + " " + c.w[1][0] + " " + c.w[1][1] + " " + c.w[2][0] + " " + c.w[2][1] + " " + c.w[3][0] + " " + c.w[3][1]);
 					double[] res = c.think(new double[] {cjv, cdv, yjv, ydv });
-					System.out.println(res[0] + " " + res[1]);
 					if(res[0] > 0) {
 						chr.jump();
 					}

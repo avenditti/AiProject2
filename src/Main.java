@@ -24,7 +24,7 @@ public class Main extends Application {
 		Pane root = new Pane();
 		Scene scene = new Scene(root, boardSizeX, boardSizeY);
 		Rectangle g = new Rectangle(500, 200, Color.GOLDENROD);
-		Label l = new Label("Jump: Space \nDuck: Down Arrow");
+		Label l = new Label("Yell jump: Space \nYell duck: Down Arrow");
 		l.setFont(Font.font("Consolas"));
 		g.relocate(0,300);
 		Rectangle s = new Rectangle(500, 300, Color.SKYBLUE);
